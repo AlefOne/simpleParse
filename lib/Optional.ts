@@ -1,0 +1,40 @@
+import { IParser, OnParseCallback } from "./IParser";
+import { IParserResult, PareseResult } from "./RegExpExecArrayEx";
+import { TransformFunction } from "./TransformFunction";
+import { ParserBase } from "./ParserBase";
+
+export class Optional<T=any> extends ParserBase<T> implements IParser<T> {
+
+    toResult: TransformFunction<T>|undefined;
+    onResult: ((x: IParserResult<T>) => void) | undefined;
+    name: string | undefined;
+
+    constructor(public arg: IParser<T>) {
+        super();
+    }
+
+    parse(text: string, pos:number=0, cb: OnParseCallback = undefined): IParserResult {
+
+        const empty = PareseResult.empty;
+        let result: IParserResult<T>|undefined = this.arg.parse(text, pos);
+
+        if (!result) {
+            result = empty;
+        }
+
+        if (cb) {
+            cb(result);
+        }
+
+        if (this.onResult) {
+            this.onResult(result);
+        }
+
+        if (this.toResult) {
+            result.value = this.toResult(result);
+        }
+        return result;
+
+    }
+
+}
