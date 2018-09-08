@@ -1,5 +1,5 @@
 import { IParser, OnParseCallback } from "./IParser";
-import { IParserResult, PareseResult } from "./RegExpExecArrayEx";
+import { IParserResult, ParseResult } from "./RegExpExecArrayEx";
 import { TransformFunction } from "./TransformFunction";
 import { ParserBase } from "./ParserBase";
 
@@ -18,40 +18,43 @@ export class List<T=any> extends ParserBase<Array<T>> implements IParser<Array<T
 
     parse(text: string, pos:number = 0, cb: OnParseCallback = undefined): IParserResult | undefined{
 
-        let result: IParserResult = PareseResult.empty;
-        let item = this.listItem.parse(text, pos, inc);
+        let result: IParserResult<Array<T>> = ParseResult.getEmpty<Array<T>>(text, pos);
+        //result.index = result.lastIndex = pos ;
+        let item = this.listItem.parse(text, pos);
 
-        if (!item) {
-            return undefined;
+        if (item) {
+            result.add(item);
+            pos = item.lastIndex ;
         } else {
-            result.push(item);
+            return undefined;
         }
 
-        while (item = this.separator.parse(text.substr(result.lastIndex), pos, inc)) {
-            item = this.listItem.parse(text.substr(result.lastIndex), pos, inc);
+        while (item = this.separator.parse(text, pos)) {
+            pos = item.lastIndex ;
+            item = this.listItem.parse(text, pos);
             if (!item) {
                 return undefined;
             } else {
-                result.push(item);
+                result.add(item);
+                pos = item.lastIndex;
             }
 
         }
-        if (cb) {
-            cb(result);
-        }
-        if (this.onResult)
-            this.onResult(result);
+
+        //result.lastIndex = pos ;
 
         if (this.toResult) {
             result.value = this.toResult(result);
         }
-        return result;
 
-        function inc(x: IParserResult) {
-            if (x.index === 0) {
-                result.lastIndex += x.lastIndex;
-            }
+        if (cb) {
+            cb(result);
         }
+
+        if (this.onResult)
+            this.onResult(result);
+
+        return result;
 
     }
 }

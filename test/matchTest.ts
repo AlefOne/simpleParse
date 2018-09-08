@@ -1,5 +1,5 @@
 import { should, assert } from 'chai';
-import * as re from '../lib';
+import * as re from '../lib/index';
 
 should();
 describe('Testy dla funkcji match', MatchTest);

@@ -19,7 +19,7 @@ export class Or<T = any> extends ParserBase<T> implements IParser<T> {
         for (let i: number = 0; i < this.args.length; i++) {
             const item: IParser = this.args[i];
             const result: IParserResult|undefined = item.parse(text, pos);
-            if (result && result.index === 0) {
+            if (result && result.index === pos) {
                 if (cb)
                     cb(result);
                 if (this.onResult) {

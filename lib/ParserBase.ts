@@ -5,8 +5,7 @@ import { TransformFunction } from "./TransformFunction";
 export abstract class ParserBase<T = any> implements IParser<T> {
 
     abstract parse(text: string, pos?: number, cb?: OnParseCallback): IParserResult<T>|undefined;
-    abstract get name(): string | undefined;
-    abstract toResult: TransformFunction<T>|undefined;
+    abstract toResult?: TransformFunction<T>|undefined;
     abstract onResult: ( (x:IParserResult<T>) => void ) | undefined = undefined;
 
     find(text: string, pos: number = 0): IParserResult<T> |undefined {
