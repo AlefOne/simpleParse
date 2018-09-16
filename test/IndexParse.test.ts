@@ -29,8 +29,8 @@ class NameParser extends Re.Or<Name> {
 
     constructor() {
 
-        const word = Re.Item.word;
-        const sword = new Re.Sequence<Name>(new Re.Item("\\\""), Re.Item.word, new Re.Item("\\\""));
+        const word = new Re.Word();
+        const sword = new Re.Sequence<Name>(new Re.Item("\\\""), new Re.Word(), new Re.Item("\\\""));
         sword.toResult = toSword;
         super(word, sword);
         return;

@@ -19,7 +19,6 @@ export class List<T=any> extends ParserBase<Array<T>> implements IParser<Array<T
     parse(text: string, pos:number = 0, cb: OnParseCallback = undefined): IParserResult | undefined{
 
         let result: IParserResult<Array<T>> = ParseResult.getEmpty<Array<T>>(text, pos);
-        //result.index = result.lastIndex = pos ;
         let item = this.listItem.parse(text, pos);
 
         if (item) {
@@ -41,18 +40,10 @@ export class List<T=any> extends ParserBase<Array<T>> implements IParser<Array<T
 
         }
 
-        //result.lastIndex = pos ;
-
-        if (this.toResult) {
-            result.value = this.toResult(result);
-        }
-
+        this.setResultValue(result);
         if (cb) {
             cb(result);
         }
-
-        if (this.onResult)
-            this.onResult(result);
 
         return result;
 

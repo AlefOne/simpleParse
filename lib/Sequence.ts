@@ -31,12 +31,9 @@ export class Sequence<T = any> extends ParserBase<T> implements IParser<T> {
             }
         }
         // result.lastIndex = pos;
+        this.setResultValue( result );
         if (cb)
             cb(result);
-        if (this.onResult)
-            this.onResult(result);
-        if (this.toResult)
-            result.value = this.toResult(result);
 
         return result;
 

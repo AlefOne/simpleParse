@@ -9,7 +9,7 @@ function AnyTest() {
     const item = new re.Item("Index");
     item.toResult = x => x[0];
 
-    const word = re.Item.word;
+    const word = new re.Word ();
 
     it('Test Item.find', itemTest);
 

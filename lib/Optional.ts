@@ -21,17 +21,9 @@ export class Optional<T=any> extends ParserBase<T> implements IParser<T> {
         if (!result) {
             result = empty;
         }
-
-        if (this.toResult) {
-            result.value = this.toResult(result);
-        }
-
+        this.setResultValue( result );
         if (cb) {
             cb(result);
-        }
-
-        if (this.onResult) {
-            this.onResult(result);
         }
 
         return result;
