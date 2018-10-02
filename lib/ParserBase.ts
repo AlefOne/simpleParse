@@ -36,11 +36,11 @@ export abstract class ParserBase<T = any> implements IParser<T> {
     protected setResultValue(result: IParserResult<T>): void {
         if (this.toResult) {
             let value = this.toResult(result);
-            if (this.name) {
-                result[this.name] = value;
-            } else {
-                result.value = value;
-            }
+            result.value = value;
+        }
+        if ( this.name )
+        {
+            result.name = this.name;
         }
         if (this.onResult) {
             this.onResult(result);

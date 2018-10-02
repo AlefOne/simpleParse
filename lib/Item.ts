@@ -36,10 +36,4 @@ export class Item<T> extends ParserBase<T> implements IParser<T> {
         return new Item("\\s+");
     }
 
-    //static get word(): Item<string> {
-    //    let word = new Item<string>('\\b\\w+\\b');
-    //    word.toResult = x => x.length > 0 ? x[0] : undefined;
-    //    return word;
-    //}
-
 }

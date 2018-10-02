@@ -21,17 +21,9 @@ function parserTest() {
         name: { $word: [], toResult: toName },
         qName: { $sequence: [{ $item: "\\\"" }, '@name', { $item: "\\\"" }], toResult: toQName },
         identifier: { $or: ["@qName", "@name"], toResult: toIdetifier },
-        alias: { $sequence: ["@identifier", { $item: "\\." }] },
-        aliased: { $sequence: ["@alias", "@identifier"] },
-        aliasedName: { $or: ["@aliased", "@identifier"] }
-        /*
-                name: { $word: [], toResult: toName },
-                qName: { $sequence: [{ $item: "\\\"" }, '@name', { $item: "\\\"" }], toResult:toQName },
-                identifier: { $or: ["@qName", "@name"], toResult:toIdentifier },
-                alias: { $sequence: ["@identifier", { $item: "\\." }], toResult:toAlias },
-                aliased: { $sequence: ["@alias", "@identifier"] }, toResult:toAliased,
-                aliasedName: { $or: ["@aliased", "@identifier"],toResult:toAliasedName }
-        */
+        alias: { $sequence: ["@identifier", { $item: "\\." }], toResult: toAlias },
+        aliased: { $sequence: ["@alias", "@identifier"], toResult: toAliased },
+        aliasedName: { $or: ["@aliased", "@identifier"], toResult: toAliasedName }
     };
 
     function toName(result: IParserResult) {
@@ -43,8 +35,33 @@ function parserTest() {
     }
 
     function toIdetifier(result: IParserResult) {
-        let rv = result['@name'] || result['@qName'];
-        return rv ;
+        let rv: string = null;
+        if (result['@name']) {
+            rv = (result['@name']).toUpperCase();;
+        } else {
+            rv = result['@qName'];
+        }
+        return rv;
+    }
+
+    function toAlias(result: IParserResult) {
+        let rv = result[0]["@identifier"];
+        return rv;
+    }
+
+    function toAliased(result: IParserResult) {
+        let shema = result[0]['@alias'];
+        let name = result[1]['@identifier'];
+        return new AliasedName(name, shema);
+    }
+
+    function toAliasedName(result: IParserResult) {
+        if (result['@aliased']) {
+            return result['@aliased'];
+        }
+        if (result['@identifier']) {
+            return new AliasedName(result['@identifier']);
+        }
     }
 
     it('Test klasy item', testC1);

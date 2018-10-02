@@ -4,7 +4,8 @@ export interface IParserResult<T = any> extends Array<ResultItem> {
     input: string;
     index: number;
     lastIndex: number;
-    value: T | undefined;
+    value?: T;
+    name?: string;
     add<U extends IParserResult>(elem: U): number;
 }
 

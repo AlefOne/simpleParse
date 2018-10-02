@@ -6,29 +6,52 @@ import { Item } from "./Item";
 import { Or } from "./Or";
 import { Sequence } from "./Sequence";
 import { Word } from "./Word";
+import { Optional } from "./Optional";
+import { Repeat } from "./Repeat";
 
 const parsers = {
     $word: { parser: Word },
     $item: { parser: Item },
+    $optional: { parser: Optional, getParams: prepareParser },
     $or: { parser: Or, getParams: prepareParserList },
-    $sequence: { parser: Sequence, getParams: prepareParserList }
+    $sequence: { parser: Sequence, getParams: prepareParserList },
+    $repeat: { parser: Repeat, getParams: prepareRepeatParams }
 }
 
 function prepareParserList(list: (Object | string)[]): IParser[] {
-    let result: IParser[] = new Array<IParser>();
-    for (let x of list) {
-        if (x instanceof Object) {
-            let parser: IParser = this.getParser(undefined, x);
-            result.push(parser);
-        } else if (typeof x === "string") {
-            let item = this.getGrammarItem(x);
-            let parser: IParser = this.getParser(x, item);
-            result.push(parser);
-        } else {
-            throw new SyntaxError();
-        }
-    }
+
+    let result: IParser[] = list.map(prepareParser.bind(this));
     return result;
+}
+
+function prepareParser(argument: (Object | string)): IParser {
+    if (argument instanceof Object) {
+        let parser: IParser = this.getParser(undefined, argument);
+        return parser;
+    } else if (typeof argument === "string") {
+        let item = this.getGrammarItem(argument);
+        let parser: IParser = this.getParser(argument, item);
+        return parser;
+    } else {
+        throw new SyntaxError();
+    }
+}
+
+function prepareRepeatParams(argument: (Object | string)): IParser | Array<any> {
+
+    if (argument instanceof String) {
+        let result = prepareParser.call(this, argument);
+        return result;
+    }
+    if (argument instanceof Array) {
+        let item = argument[0];
+        let from = argument.length > 1 ? argument[1] : 0;
+        let to = argument.length > 2 ? argument[2] : undefined;
+        let parser = prepareParser.call(this, item);
+        return [parser, from, to];
+    }
+    throw new SyntaxError();
+
 }
 
 export class Parser<T> extends ParserBase<T> implements IParser {
